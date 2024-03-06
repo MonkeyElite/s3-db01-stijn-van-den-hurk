@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+    servermanagerapi:
+      build:
+        context: ./ServerManagerApi
+        dockerfile: Dockerfile
+      ports:
+        - 5000:5000
+      depends_on:
+        - database
+
+    database:
+      image: mcr.microsoft.com/mssql/server:latest
+      environment:
+        SA_PASSWORD: "GewoonBeter!"
+        ACCEPT_EULA: "Y"
+      ports:
+        - "1433:1433"
+      volumes:
+        - db_data:/var/opt/mssql
+
+volumes:
+  db_data:
