@@ -5,18 +5,61 @@ namespace ServerManagerCore.Services
 {
     public class RequestService
     {
-        private readonly IRequestService _requestService;
+        private readonly IRequestRepository _requestRepository;
 
-        public RequestService(IRequestService requestService)
+        public RequestService(IRequestRepository requestRepository)
         {
-            _requestService = requestService;
+            _requestRepository = requestRepository;
         }
 
         public List<Request> GetRequests()
         {
-            List<Request> requests = _requestService.GetRequests();
+            return _requestRepository.GetRequests();
+        }
 
-            return requests;
+        public Request GetRequestById(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Invalid id.");
+            }
+
+            return _requestRepository.GetRequestById(id);
+        }
+
+        public Request CreateRequest(Request request)
+        {
+            if (request == null || request.Title == null || request.Description == null)
+            {
+                throw new ArgumentException("Missing request information.");
+            }
+
+            return _requestRepository.CreateRequest(request);
+        }
+
+        public Request UpdateRequest(int id, Request request)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Invalid id.");
+            }
+
+            if (request == null || request.Title == null || request.Description == null)
+            {
+                throw new ArgumentException("Missing request information.");
+            }
+
+            return _requestRepository.UpdateRequest(id, request);
+        }
+
+        public bool DeleteRequest(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Invalid id.");
+            }
+
+            return _requestRepository.DeleteRequest(id);
         }
     }
 }
