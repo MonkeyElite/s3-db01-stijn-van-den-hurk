@@ -21,7 +21,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore ServerManager/ServerManagerApi/ServerManagerApi/ServerManagerApi.csproj
+      run: dotnet restore ServerManager/ServerManagerApi/ServerManager.sln
     - name: Build
       run: dotnet build ServerManager/ServerManagerApi/ServerManagerApi/ServerManagerApi.csproj --no-restore
     - name: Test
