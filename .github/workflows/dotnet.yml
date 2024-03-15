@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: dotnet build ServerManager/ServerManagerApi/ServerManagerApi/ServerManagerApi.csproj --no-restore
     - name: Test
-      run: dotnet test ServerManager/ServerManagerApi/ServerManagerApi/ServerManagerApi.csproj --no-build --verbosity normal
+      run: dotnet test ServerManager/ServerManagerApi/ServerManagerTests/ServerManagerTests.csproj --no-build --verbosity normal
