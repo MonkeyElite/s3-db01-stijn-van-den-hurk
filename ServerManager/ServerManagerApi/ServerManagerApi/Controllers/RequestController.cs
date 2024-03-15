@@ -2,7 +2,7 @@
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
 
-namespace ServerManagerApi.Controllers
+namespace YourNamespace.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -16,30 +16,52 @@ namespace ServerManagerApi.Controllers
         }
 
         [HttpGet]
-        public List<Request> Get()
+        public ActionResult<List<Request>> Get()
         {
-            return _requestService.GetRequests();
+            var requests = _requestService.GetRequests();
+            return Ok(requests);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public ActionResult<Request> Get(int id)
         {
-            return "value";
+            var request = _requestService.GetRequestById(id);
+            if (request == null)
+            {
+                return NotFound();
+            }
+            return Ok(request);
         }
 
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult<Request> Post([FromBody] Request request)
         {
+            _requestService.CreateRequest(request);
+            return CreatedAtAction(nameof(Get), new { id = request.Id }, request);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] Request request)
         {
+            var existingRequest = _requestService.GetRequestById(id);
+            if (existingRequest == null)
+            {
+                return NotFound();
+            }
+            var updatedRequest = _requestService.UpdateRequest(id, request);
+            return Ok(updatedRequest);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var existingRequest = _requestService.GetRequestById(id);
+            if (existingRequest == null)
+            {
+                return NotFound();
+            }
+            _requestService.DeleteRequest(id);
+            return NoContent();
         }
     }
 }

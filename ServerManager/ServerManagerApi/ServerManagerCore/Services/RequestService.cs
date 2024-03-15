@@ -5,18 +5,36 @@ namespace ServerManagerCore.Services
 {
     public class RequestService
     {
-        private readonly IRequestService _requestService;
+        private readonly IRequestRepository _requestRepository;
 
-        public RequestService(IRequestService requestService)
+        public RequestService(IRequestRepository requestRepository)
         {
-            _requestService = requestService;
+            _requestRepository = requestRepository;
         }
 
         public List<Request> GetRequests()
         {
-            List<Request> requests = _requestService.GetRequests();
+            return _requestRepository.GetRequests();
+        }
 
-            return requests;
+        public Request GetRequestById(int id)
+        {
+            return _requestRepository.GetRequestById(id);
+        }
+
+        public Request CreateRequest(Request request)
+        {
+            return _requestRepository.CreateRequest(request);
+        }
+
+        public Request UpdateRequest(int id, Request request)
+        {
+            return _requestRepository.UpdateRequest(id, request);
+        }
+
+        public bool DeleteRequest(int id)
+        {
+            return _requestRepository.DeleteRequest(id);
         }
     }
 }
