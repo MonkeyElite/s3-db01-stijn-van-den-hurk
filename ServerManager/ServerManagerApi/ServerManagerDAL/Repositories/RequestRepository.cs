@@ -15,49 +15,80 @@ namespace ServerManagerDAL.Repositories
 
         public List<Request> GetRequests()
         {
-            var requests = _dbContext.Requests.ToList();
+            try
+            {
+                var requests = _dbContext.Requests.ToList();
 
-            return requests;
+                return requests;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public Request GetRequestById(int id)
         {
-            Request request = GetRequests().FirstOrDefault(r => r.Id == id);
+            try
+            {
+                Request request = GetRequests().FirstOrDefault(r => r.Id == id);
 
-            return request;
+                return request;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public Request CreateRequest(Request request)
         {
-            _dbContext.Requests.Add(request);
-            _dbContext.SaveChanges();
+            try
+            {
+                _dbContext.Requests.Add(request);
+                _dbContext.SaveChanges();
 
-            return GetRequestById(request.Id);
+                return GetRequestById(request.Id);
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            } 
         }
 
         public Request UpdateRequest(int id, Request request)
         {
-            var existingRequest = _dbContext.Requests.FirstOrDefault(r => r.Id == id);
-            if (existingRequest != null)
+            try
             {
-                existingRequest.Title = request.Title;
-                existingRequest.Description = request.Description;
-                _dbContext.SaveChanges();
-            }
+                var existingRequest = _dbContext.Requests.FirstOrDefault(r => r.Id == id);
+                if (existingRequest != null)
+                {
+                    existingRequest.Title = request.Title;
+                    existingRequest.Description = request.Description;
+                    _dbContext.SaveChanges();
+                }
 
-            return GetRequestById(id);
+                return GetRequestById(id);
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
 
         public bool DeleteRequest(int id)
         {
-            var requestToDelete = _dbContext.Requests.FirstOrDefault(r => r.Id == id);
-            if (requestToDelete != null)
+            try
             {
-                _dbContext.Requests.Remove(requestToDelete);
-                _dbContext.SaveChanges();
-            }
+                var requestToDelete = _dbContext.Requests.FirstOrDefault(r => r.Id == id);
+                if (requestToDelete != null)
+                {
+                    _dbContext.Requests.Remove(requestToDelete);
+                    _dbContext.SaveChanges();
+                }
 
-            return true;
+                return true;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
