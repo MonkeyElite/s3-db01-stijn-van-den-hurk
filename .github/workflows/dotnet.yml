@@ -28,26 +28,23 @@ jobs:
     - name: Build
       run: dotnet build ServerManager/ServerManagerApi/ServerManagerApi/ServerManagerApi.csproj --no-restore
 
-    - name: Test with code coverage
-      run: |
-        dotnet test ServerManager/ServerManagerApi/ServerManagerTests/ServerManagerTests.csproj \
-          --verbosity normal \
-          /p:CollectCoverage=true \
-          /p:CoverletOutputFormat=opencover
-      continue-on-error: true
+    - name: Test
+      run: dotnet test ServerManager/ServerManagerApi/ServerManagerTests/ServerManagerTests.csproj --no-build --verbosity normal --collect:"XPlat Code Coverage" --logger trx --results-directory coverage
 
-    - name: Generate coverage report
-      if: ${{ always() }}
-      run: |
-        dotnet tool install --global dotnet-reportgenerator-globaltool
-        reportgenerator \
-          -reports:"**/coverage.opencover.xml" \
-          -targetdir:"coverage-report" \
-          -reporttypes:"Html"
-
-    - name: Upload coverage artifact
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v2
+    - name: Code Coverage Summary Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        name: coverage-report
-        path: coverage-report
+          filename: 'coverage/*/coverage.cobertura.xml'
+          badge: true
+          format: 'markdown'
+          output: 'both'
+  
+    - name: Add Coverage PR Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+          recreate: true
+          path: code-coverage-results.md
+  
+    - name: Write to Job Summary
+      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
