@@ -1,8 +1,8 @@
 TODO s3:
 
 - DTOs gebruiken.
-- static code analysis (solarqube + sonarscanner)
-- WebSockets
+- static code analysis (solarqube + sonarscanner) // Done
+- WebSockets // Done
 - Research
 - CD pipeline
 - Docker
@@ -14,13 +14,13 @@ TODO s3:
 Vanuit de CI de CD aanroepen. Als je github actions lokaal draait dan kan je Docker aanroepen.
 
 LO1:
-- WebSockets
+- WebSockets // Done
 - Volledige applicatie
 - API Documentatie
 
 LO2:
-- CI pipeline
-- Static Code Analysis
+- CI pipeline // Done
+- Static Code Analysis // Done
 
 LO3:
 - Research
@@ -30,7 +30,7 @@ LO4:
 - Docker (Host.Docker.Internal, alleen de API is voldoende) 
 
 LO5:
-- Meten unit test coverage
+- Meten unit test coverage // Done
 - End to end testen
 - Integration testen
 - Performance testen (optioneel)
