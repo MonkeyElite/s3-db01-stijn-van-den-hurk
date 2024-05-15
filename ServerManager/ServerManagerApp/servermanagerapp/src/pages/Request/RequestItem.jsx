@@ -8,13 +8,30 @@ const RequestItem = ({ request }) => {
     };
 
     return (
-        <div>
+        <div style={containerStyle}>
             <form onSubmit={deleteRequest}>
-                <h3>{request.title}</h3>
-                <button type="submit">Delete</button>
+                <h3 style={titleStyle}>{request.title}</h3>
+                <button type="submit" style={buttonStyle}>Delete</button>
             </form>
         </div>
     );
+};
+
+const containerStyle = {
+  marginBottom: '20px',
+};
+
+const titleStyle = {
+  marginBottom: '5px',
+};
+
+const buttonStyle = {
+  backgroundColor: '#dc3545',
+  color: 'white',
+  border: 'none',
+  padding: '10px 20px',
+  borderRadius: '5px',
+  cursor: 'pointer',
 };
 
 export default RequestItem;
