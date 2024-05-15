@@ -1,6 +1,6 @@
 TODO s3:
 
-- DTOs gebruiken.
+- DTOs gebruiken. // Gekozen om viewmodels te gebruiken, Done
 - static code analysis (solarqube + sonarscanner) // Done
 - WebSockets // Done
 - Research
