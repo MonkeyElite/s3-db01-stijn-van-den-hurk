@@ -1,0 +1,14 @@
+CI/CD
+- static code analysis (solarqube + sonarscanner)
+download runner to run both the github actions and sonarQube to local machine.
+
+Deployment is required.
+- Deplay website on server at home using docker.
+
+
+
+- end to end testing met cypress
+- Documentatie proces, ontwerp en api documentatie.
+- reasearchdocumenten maken (random & security). 
+
+
