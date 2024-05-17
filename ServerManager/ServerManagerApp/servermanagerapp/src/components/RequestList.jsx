@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import requestApi from "../../api/RequestApi";
+import requestApi from "../api/RequestApi";
 import RequestItem from "./RequestItem";
 
 const RequestList = () => {
@@ -19,15 +19,15 @@ const RequestList = () => {
 
   return (
     <div>
-      <h2>Request List</h2>
+      <h2 class="text-4xl text-white">Request List</h2>
       {requests && requests.length > 0 ? (
-        <ul>
+        <ul class="justify-center">
           {requests.map((request) => (
             <RequestItem key={request.id} request={request} />
           ))}
         </ul>
       ) : (
-        <p>No requests found.</p>
+        <p class="text-2xl text-white">No requests found.</p>
       )}
     </div>
   );

@@ -51,7 +51,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public ActionResult<RequestViewModel> Post([FromBody] RequestViewModel request)
+        public ActionResult<RequestViewModel> Post([FromBody] Request request)
         {
             if (!ModelState.IsValid)
             {

@@ -1,27 +1,22 @@
-import logo from './logo.svg';
-import RequestList from './pages/Request/RequestList';
-import RequestForm from './pages/Request/RequestForm';
-import './App.css';
+import RequestList from "./components/RequestList";
+import RequestForm from "./components/RequestForm";
+import NavBar from "./components/navbar";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <RequestList />
-        <RequestForm />
+    <div
+      className="App"
+      class="bg-gradient-to-bl from-slate-800 to-slate-700 h-screen"
+    >
+      <header>
+        <NavBar />
       </header>
+      <div class="flex justify-center mt-5">
+        <RequestList />
+      </div>
+      <div class="flex justify-center">
+        <RequestForm />
+      </div>
     </div>
   );
 }
