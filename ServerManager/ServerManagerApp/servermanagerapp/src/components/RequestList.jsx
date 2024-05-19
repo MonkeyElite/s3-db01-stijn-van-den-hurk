@@ -17,17 +17,30 @@ const RequestList = () => {
     fetchData();
   }, []);
 
+  const handleDelete = (id) => {
+    setRequests(requests.filter((request) => request.id !== id));
+  };
+
+  const handleUpdate = (id) => {
+    console.log(`Update request with ID ${id}`);
+  };
+
   return (
-    <div>
-      <h2 class="text-4xl text-white">Request List</h2>
+    <div className="p-8">
+      <h2 className="text-4xl text-white mb-6">Request List</h2>
       {requests && requests.length > 0 ? (
-        <ul class="justify-center">
+        <div className="grid gap-4 cols-4">
           {requests.map((request) => (
-            <RequestItem key={request.id} request={request} />
+            <RequestItem
+              key={request.id}
+              request={request}
+              onDelete={handleDelete}
+              onUpdate={handleUpdate}
+            />
           ))}
-        </ul>
+        </div>
       ) : (
-        <p class="text-2xl text-white">No requests found.</p>
+        <p className="text-2xl text-white">No requests found.</p>
       )}
     </div>
   );
