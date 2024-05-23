@@ -32,7 +32,7 @@ const RequestList = () => {
       <div className="overflow-y-auto">
         {requests && requests.length > 0 ? (
           <div className="grid gap-4 grid-cols-4">
-            {requests.slice(0, 12).map((request) => (
+            {requests.map((request) => (
               <RequestItem
                 key={request.id}
                 request={request}

@@ -4,19 +4,53 @@ import requestApi from "../api/RequestApi";
 const CreateRequestForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const validateForm = () => {
+    if (!title.trim() || !description.trim()) {
+      setErrorMessage("Title and description are required.");
+      return false;
+    }
+    if (title.length > 255) {
+      setErrorMessage("Title must be less than or equal to 255 characters.");
+      return false;
+    }
+    if (description.length > 10000) {
+      setErrorMessage(
+        "Description must be less than or equal to 10000 characters."
+      );
+      return false;
+    }
+    return true;
+  };
 
   const createRequest = async (e) => {
     e.preventDefault();
-    const newRequest = { title, description };
-    await requestApi.postRequest(newRequest);
-    setTitle("");
-    setDescription("");
-    window.location.href = "/request";
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const newRequest = {
+      title: title.trim(),
+      description: description.trim(),
+    };
+
+    try {
+      await requestApi.postRequest(newRequest);
+      setTitle("");
+      setDescription("");
+      setErrorMessage("");
+      window.location.href = "/request";
+    } catch (error) {
+      console.error("Error creating request:", error);
+      setErrorMessage("Failed to create request. Please try again later.");
+    }
   };
 
   return (
     <div style={{ marginBottom: "20px" }}>
-      <h2 className="text-white">Create New Request</h2>
+      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
       <form onSubmit={createRequest} style={formStyle}>
         <input
           type="text"
