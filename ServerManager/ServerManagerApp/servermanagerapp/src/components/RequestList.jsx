@@ -22,26 +22,29 @@ const RequestList = () => {
   };
 
   const handleUpdate = (id) => {
-    console.log(`Update request with ID ${id}`);
+    console.log(id);
+    window.location.href = "/request/update/" + id;
   };
 
   return (
     <div className="p-8">
       <h2 className="text-4xl text-white mb-6">Request List</h2>
-      {requests && requests.length > 0 ? (
-        <div className="grid gap-4 cols-4">
-          {requests.map((request) => (
-            <RequestItem
-              key={request.id}
-              request={request}
-              onDelete={handleDelete}
-              onUpdate={handleUpdate}
-            />
-          ))}
-        </div>
-      ) : (
-        <p className="text-2xl text-white">No requests found.</p>
-      )}
+      <div className="overflow-y-auto">
+        {requests && requests.length > 0 ? (
+          <div className="grid gap-4 grid-cols-4">
+            {requests.slice(0, 12).map((request) => (
+              <RequestItem
+                key={request.id}
+                request={request}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-2xl text-white">No requests found.</p>
+        )}
+      </div>
     </div>
   );
 };

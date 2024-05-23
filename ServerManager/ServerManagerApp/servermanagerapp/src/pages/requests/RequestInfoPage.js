@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import requestApi from "../../api/RequestApi";
 
-import RequestForm from "../../components/UpdateRequestForm";
 import NavBar from "../../components/navbar";
 
-function UpdateRequestPage() {
+const RequestInfoPage = () => {
   const { id } = useParams();
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,16 +33,17 @@ function UpdateRequestPage() {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <NavBar page="Request" />
-      <div class="flex flex-col items-center mt-8">
-        <h2 class="text-3xl text-white">Update Request</h2>
-        <div>
-          <RequestForm request={request} />
+      <div className="ml-[10%] max-w-[80%]">
+        <h1 className="text-2xl text-white mb-4">Request Info</h1>
+        <div className="bg-slate-700 p-4 rounded-md shadow-md">
+          <h2 className="text-xl text-white">{request.title}</h2>
+          <p className="text-white">{request.description}</p>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default UpdateRequestPage;
+export default RequestInfoPage;
