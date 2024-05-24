@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ServerManagerApi.ViewModels.Request;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
-using System.Net;
 
 namespace YourNamespace.Controllers
 {
@@ -18,11 +17,11 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Request>> Get()
+        public ActionResult<Request> Get()
         {
             try
             {
-                var requests = _requestService.GetRequests();
+                List<Request> requests = _requestService.GetRequests();
                 return Ok(requests);
             } catch (Exception ex)
             {
@@ -36,7 +35,7 @@ namespace YourNamespace.Controllers
         {
             try
             {
-                var request = _requestService.GetRequestById(id);
+                Request request = _requestService.GetRequestById(id);
 
                 if (request == null)
                 {
@@ -52,7 +51,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Request> Post([FromBody] Request request)
+        public ActionResult<RequestViewModel> Post([FromBody] Request request)
         {
             if (!ModelState.IsValid)
             {
@@ -61,7 +60,7 @@ namespace YourNamespace.Controllers
 
             try
             {
-                Request createRequest = _requestService.CreateRequest(request);
+                RequestViewModel createRequest = new (_requestService.CreateRequest(new Request(request.Title, request.Description)));
                 return CreatedAtAction(nameof(Get), createRequest);
             } catch (Exception ex)
             {

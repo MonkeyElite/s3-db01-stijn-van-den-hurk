@@ -30,7 +30,7 @@ namespace ServerManagerDAL.Repositories
         {
             try
             {
-                Request request = GetRequests().FirstOrDefault(r => r.Id == id);
+                Request? request = GetRequests().FirstOrDefault(r => r.Id == id);
 
                 return request;
             } catch (Exception ex)
