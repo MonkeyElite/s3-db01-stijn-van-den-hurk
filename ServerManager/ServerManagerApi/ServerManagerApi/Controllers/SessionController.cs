@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ServerManagerApi.ViewModels.Request;
+using ServerManagerApi.Models.Session;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
 
@@ -7,17 +7,17 @@ namespace YourNamespace.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequestController(RequestService requestService) : ControllerBase
+    public class SessionController(SessionService sessionService) : ControllerBase
     {
-        private readonly RequestService _requestService = requestService;
+        private readonly SessionService _sessionService = sessionService;
 
         [HttpGet]
-        public ActionResult<Request> Get()
+        public ActionResult<Session> Get()
         {
             try
             {
-                List<Request> requests = _requestService.GetRequests();
-                return Ok(requests);
+                List<Session> sessions = _sessionService.GetSessions();
+                return Ok(sessions);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message); // Temp Solution
@@ -26,18 +26,18 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Request> Get(int id)
+        public ActionResult<Session> Get(int id)
         {
             try
             {
-                Request request = _requestService.GetRequestById(id);
+                Session session = _sessionService.GetSessionById(id);
 
-                if (request == null)
+                if (session == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(request);
+                return Ok(session);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -46,7 +46,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public ActionResult<RequestViewModel> Post([FromBody] Request request)
+        public ActionResult<SessionViewModel> Post([FromBody] Session session)
         {
             if (!ModelState.IsValid)
             {
@@ -55,8 +55,8 @@ namespace YourNamespace.Controllers
 
             try
             {
-                RequestViewModel createRequest = new (_requestService.CreateRequest(new Request(request.Title, request.Description)));
-                return CreatedAtAction(nameof(Get), createRequest);
+                SessionViewModel createSession = new (_sessionService.CreateSession(new Session(session.Title, session.Description, session.StartTime, session.EndTime, session.ServerId)));
+                return CreatedAtAction(nameof(Get), createSession);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message); // Temp Solution
@@ -65,9 +65,9 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Request request)
+        public IActionResult Put(int id, [FromBody] Session session)
         {
-            request.Id = id;
+            session.Id = id;
 
             if (!ModelState.IsValid)
             {
@@ -76,15 +76,15 @@ namespace YourNamespace.Controllers
 
             try
             {
-                var existingRequest = _requestService.GetRequestById(id);
+                var existingSession = _sessionService.GetSessionById(id);
 
-                if (existingRequest == null)
+                if (existingSession == null)
                 {
                     return NotFound();
                 }
 
-                var updatedRequest = _requestService.UpdateRequest(request);
-                return Ok(updatedRequest);
+                var updatedSession = _sessionService.UpdateSession(session);
+                return Ok(updatedSession);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message); // Temp Solution
@@ -95,16 +95,16 @@ namespace YourNamespace.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existingRequest = _requestService.GetRequestById(id);
+            var existingSession = _sessionService.GetSessionById(id);
 
-            if (existingRequest == null)
+            if (existingSession == null)
             {
                 return NotFound();
             }
 
             try
             {
-                _requestService.DeleteRequest(id);
+                _sessionService.DeleteSession(id);
                 return Ok();
             } catch (Exception ex)
             {

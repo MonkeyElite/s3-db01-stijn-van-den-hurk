@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ServerManagerApi.ViewModels.Request;
+using ServerManagerApi.Models.Server;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
 
@@ -7,17 +7,17 @@ namespace YourNamespace.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequestController(RequestService requestService) : ControllerBase
+    public class ServerController(ServerService serverService) : ControllerBase
     {
-        private readonly RequestService _requestService = requestService;
+        private readonly ServerService _serverService = serverService;
 
         [HttpGet]
-        public ActionResult<Request> Get()
+        public ActionResult<Server> Get()
         {
             try
             {
-                List<Request> requests = _requestService.GetRequests();
-                return Ok(requests);
+                List<Server> servers = _serverService.GetServers();
+                return Ok(servers);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message); // Temp Solution
@@ -26,18 +26,18 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Request> Get(int id)
+        public ActionResult<Server> Get(int id)
         {
             try
             {
-                Request request = _requestService.GetRequestById(id);
+                Server server = _serverService.GetServerById(id);
 
-                if (request == null)
+                if (server == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(request);
+                return Ok(server);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
@@ -46,7 +46,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public ActionResult<RequestViewModel> Post([FromBody] Request request)
+        public ActionResult<ServerViewModel> Post([FromBody] Server server)
         {
             if (!ModelState.IsValid)
             {
@@ -55,8 +55,8 @@ namespace YourNamespace.Controllers
 
             try
             {
-                RequestViewModel createRequest = new (_requestService.CreateRequest(new Request(request.Title, request.Description)));
-                return CreatedAtAction(nameof(Get), createRequest);
+                ServerViewModel createServer = new (_serverService.CreateServer(new Server(server.Title, server.Description, server.GameName, server.Ip, server.Port, server.Password)));
+                return CreatedAtAction(nameof(Get), createServer);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message); // Temp Solution
@@ -65,9 +65,9 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Request request)
+        public IActionResult Put(int id, [FromBody] Server server)
         {
-            request.Id = id;
+            server.Id = id;
 
             if (!ModelState.IsValid)
             {
@@ -76,15 +76,15 @@ namespace YourNamespace.Controllers
 
             try
             {
-                var existingRequest = _requestService.GetRequestById(id);
+                var existingServer = _serverService.GetServerById(id);
 
-                if (existingRequest == null)
+                if (existingServer == null)
                 {
                     return NotFound();
                 }
 
-                var updatedRequest = _requestService.UpdateRequest(request);
-                return Ok(updatedRequest);
+                var updatedServer = _serverService.UpdateServer(server);
+                return Ok(updatedServer);
             } catch (Exception ex)
             {
                 Console.WriteLine(ex.Message); // Temp Solution
@@ -95,16 +95,16 @@ namespace YourNamespace.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existingRequest = _requestService.GetRequestById(id);
+            var existingServer = _serverService.GetServerById(id);
 
-            if (existingRequest == null)
+            if (existingServer == null)
             {
                 return NotFound();
             }
 
             try
             {
-                _requestService.DeleteRequest(id);
+                _serverService.DeleteServer(id);
                 return Ok();
             } catch (Exception ex)
             {

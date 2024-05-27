@@ -4,15 +4,15 @@ using ServerManagerDAL.Data;
 
 namespace ServerManagerDAL.Repositories
 {
-    public class RequestRepository(ApplicationDbContext dbContext) : IRequestRepository
+    public class ServerRepository(ApplicationDbContext dbContext) : IServerRepository
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
-        public List<Request> GetRequests()
+        public List<Server> GetServers()
         {
             try
             {
-                var requests = _dbContext.Requests.ToList();
+                var requests = _dbContext.Servers.ToList();
 
                 return requests;
             } catch (Exception ex)
@@ -21,11 +21,11 @@ namespace ServerManagerDAL.Repositories
             }
         }
 
-        public Request GetRequestById(int id)
+        public Server GetServerById(int id)
         {
             try
             {
-                Request? request = GetRequests().FirstOrDefault(r => r.Id == id);
+                Server? request = GetServers().FirstOrDefault(r => r.Id == id);
 
                 return request;
             } catch (Exception ex)
@@ -34,33 +34,33 @@ namespace ServerManagerDAL.Repositories
             }
         }
 
-        public Request CreateRequest(Request request)
+        public Server CreateServer(Server request)
         {
             try
             {
-                _dbContext.Requests.Add(request);
+                _dbContext.Servers.Add(request);
                 _dbContext.SaveChanges();
 
-                return GetRequestById(request.Id);
+                return GetServerById(request.Id);
             } catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             } 
         }
 
-        public Request UpdateRequest(Request request)
+        public Server UpdateServer(Server request)
         {
             try
             {
-                var existingRequest = _dbContext.Requests.FirstOrDefault(r => r.Id == request.Id);
-                if (existingRequest != null)
+                var existingServer = _dbContext.Servers.FirstOrDefault(r => r.Id == request.Id);
+                if (existingServer != null)
                 {
-                    existingRequest.Title = request.Title;
-                    existingRequest.Description = request.Description;
+                    existingServer.Title = request.Title;
+                    existingServer.Description = request.Description;
                     _dbContext.SaveChanges();
                 }
 
-                return GetRequestById(request.Id);
+                return GetServerById(request.Id);
             } catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -68,14 +68,14 @@ namespace ServerManagerDAL.Repositories
             
         }
 
-        public bool DeleteRequest(int id)
+        public bool DeleteServer(int id)
         {
             try
             {
-                var requestToDelete = _dbContext.Requests.FirstOrDefault(r => r.Id == id);
+                var requestToDelete = _dbContext.Servers.FirstOrDefault(r => r.Id == id);
                 if (requestToDelete != null)
                 {
-                    _dbContext.Requests.Remove(requestToDelete);
+                    _dbContext.Servers.Remove(requestToDelete);
                     _dbContext.SaveChanges();
                 }
 

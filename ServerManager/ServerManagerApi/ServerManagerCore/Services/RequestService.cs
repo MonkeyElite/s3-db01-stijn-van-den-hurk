@@ -3,14 +3,9 @@ using ServerManagerCore.Models;
 
 namespace ServerManagerCore.Services
 {
-    public class RequestService
+    public class RequestService(IRequestRepository requestRepository)
     {
-        private readonly IRequestRepository _requestRepository;
-
-        public RequestService(IRequestRepository requestRepository)
-        {
-            _requestRepository = requestRepository;
-        }
+        private readonly IRequestRepository _requestRepository = requestRepository;
 
         public List<Request> GetRequests()
         {
@@ -37,9 +32,9 @@ namespace ServerManagerCore.Services
             return _requestRepository.CreateRequest(request);
         }
 
-        public Request UpdateRequest(int id, Request request)
+        public Request UpdateRequest(Request request)
         {
-            if (id <= 0)
+            if (request.Id <= 0)
             {
                 throw new ArgumentException("Invalid id.");
             }
@@ -49,7 +44,7 @@ namespace ServerManagerCore.Services
                 throw new ArgumentException("Missing request information.");
             }
 
-            return _requestRepository.UpdateRequest(id, request);
+            return _requestRepository.UpdateRequest(request);
         }
 
         public bool DeleteRequest(int id)

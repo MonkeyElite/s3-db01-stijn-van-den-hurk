@@ -4,15 +4,15 @@ using ServerManagerDAL.Data;
 
 namespace ServerManagerDAL.Repositories
 {
-    public class RequestRepository(ApplicationDbContext dbContext) : IRequestRepository
+    public class SessionRepository(ApplicationDbContext dbContext) : ISessionRepository
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 
-        public List<Request> GetRequests()
+        public List<Session> GetSessions()
         {
             try
             {
-                var requests = _dbContext.Requests.ToList();
+                var requests = _dbContext.Sessions.ToList();
 
                 return requests;
             } catch (Exception ex)
@@ -21,11 +21,11 @@ namespace ServerManagerDAL.Repositories
             }
         }
 
-        public Request GetRequestById(int id)
+        public Session GetSessionById(int id)
         {
             try
             {
-                Request? request = GetRequests().FirstOrDefault(r => r.Id == id);
+                Session? request = GetSessions().FirstOrDefault(r => r.Id == id);
 
                 return request;
             } catch (Exception ex)
@@ -34,33 +34,33 @@ namespace ServerManagerDAL.Repositories
             }
         }
 
-        public Request CreateRequest(Request request)
+        public Session CreateSession(Session request)
         {
             try
             {
-                _dbContext.Requests.Add(request);
+                _dbContext.Sessions.Add(request);
                 _dbContext.SaveChanges();
 
-                return GetRequestById(request.Id);
+                return GetSessionById(request.Id);
             } catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             } 
         }
 
-        public Request UpdateRequest(Request request)
+        public Session UpdateSession(Session request)
         {
             try
             {
-                var existingRequest = _dbContext.Requests.FirstOrDefault(r => r.Id == request.Id);
-                if (existingRequest != null)
+                var existingSession = _dbContext.Sessions.FirstOrDefault(r => r.Id == request.Id);
+                if (existingSession != null)
                 {
-                    existingRequest.Title = request.Title;
-                    existingRequest.Description = request.Description;
+                    existingSession.Title = request.Title;
+                    existingSession.Description = request.Description;
                     _dbContext.SaveChanges();
                 }
 
-                return GetRequestById(request.Id);
+                return GetSessionById(request.Id);
             } catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -68,14 +68,14 @@ namespace ServerManagerDAL.Repositories
             
         }
 
-        public bool DeleteRequest(int id)
+        public bool DeleteSession(int id)
         {
             try
             {
-                var requestToDelete = _dbContext.Requests.FirstOrDefault(r => r.Id == id);
+                var requestToDelete = _dbContext.Sessions.FirstOrDefault(r => r.Id == id);
                 if (requestToDelete != null)
                 {
-                    _dbContext.Requests.Remove(requestToDelete);
+                    _dbContext.Sessions.Remove(requestToDelete);
                     _dbContext.SaveChanges();
                 }
 

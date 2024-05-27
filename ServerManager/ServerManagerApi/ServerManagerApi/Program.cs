@@ -30,6 +30,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<RequestService>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 
+builder.Services.AddScoped<SessionService>();
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+
+builder.Services.AddScoped<ServerService>();
+builder.Services.AddScoped<IServerRepository, ServerRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

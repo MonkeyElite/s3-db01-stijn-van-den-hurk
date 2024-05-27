@@ -7,7 +7,7 @@ namespace ServerManagerCore.Interfaces
         List<Request> GetRequests();
         Request GetRequestById(int id);
         Request CreateRequest(Request request);
-        Request UpdateRequest(int id, Request request);
+        Request UpdateRequest(Request request);
         bool DeleteRequest(int id);
     }
 }
