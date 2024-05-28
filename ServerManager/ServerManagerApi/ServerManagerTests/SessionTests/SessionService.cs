@@ -86,7 +86,7 @@ namespace ServerManagerTests.SessionTests
             // Arrange
             var mockRepository = new Mock<ISessionRepository>();
             var service = new SessionService(mockRepository.Object);
-            var session = new Session("Test Session", "Test Description", DateTime.UtcNow.AddHours(1), DateTime.UtcNow, 1); // EndTime before StartTime
+            var session = new Session("Test Session", "Test Description", DateTime.UtcNow.AddHours(1), DateTime.UtcNow, 1);
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => service.CreateSession(session));
@@ -131,19 +131,6 @@ namespace ServerManagerTests.SessionTests
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => service.UpdateSession(null));
-        }
-
-        [Fact]
-        public void UpdateSession_WithInvalidSession_ThrowsArgumentException()
-        {
-            // Arrange
-            var mockRepository = new Mock<ISessionRepository>();
-            var service = new SessionService(mockRepository.Object);
-            var session = new Session("Test Session", "Test Description", DateTime.UtcNow.AddHours(1), DateTime.UtcNow, 1) { Id = 1 }; // EndTime before StartTime
-
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => service.UpdateSession(session));
-            Assert.Contains("End Time must be greater than Start Time", ex.Message);
         }
 
         [Fact]

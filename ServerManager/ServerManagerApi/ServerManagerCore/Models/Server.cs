@@ -2,7 +2,7 @@
 
 namespace ServerManagerCore.Models
 {
-    public class Server(string title, string description, string gamename, string ip, int port, string password)
+    public class Server(string title, string description, string gameName, string ip, int port, string password)
     {
         public int Id { get; set; }
         
@@ -16,7 +16,7 @@ namespace ServerManagerCore.Models
 
         [Required]
         [MaxLength(255)]
-        public string GameName { get; set; } = gamename;
+        public string GameName { get; set; } = gameName;
 
         [Required]
         [MaxLength(39)]

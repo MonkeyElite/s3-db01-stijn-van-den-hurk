@@ -1,5 +1,6 @@
 ﻿using ServerManagerCore.Models;
 using ServerManagerCore.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace ServerManagerCore.Services
 {
@@ -24,9 +25,14 @@ namespace ServerManagerCore.Services
 
         public Session CreateSession(Session session)
         {
-            if (session == null || session.Title == null || session.Description == null)
+            if (session == null || session.Title == null || session.Description == null || session.StartTime == DateTime.MinValue || session.EndTime == DateTime.MinValue || session.ServerId <= 0)
             {
                 throw new ArgumentException("Missing session information.");
+            }
+
+            if (session.StartTime > session.EndTime)
+            {
+                throw new ArgumentException("End Time must be greater than Start Time");
             }
 
             return _sessionRepository.CreateSession(session);
@@ -34,14 +40,14 @@ namespace ServerManagerCore.Services
 
         public Session UpdateSession(Session session)
         {
-            if (session.Id <= 0)
-            {
-                throw new ArgumentException("Invalid id.");
-            }
-
             if (session == null || session.Title == null || session.Description == null)
             {
                 throw new ArgumentException("Missing session information.");
+            }
+
+            if (session.Id <= 0)
+            {
+                throw new ArgumentException("Invalid id.");
             }
 
             return _sessionRepository.UpdateSession(session);

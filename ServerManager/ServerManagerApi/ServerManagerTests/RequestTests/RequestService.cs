@@ -104,7 +104,7 @@ namespace ServerManagerTests.RequestTests
             // Arrange
             var mockRepository = new Mock<IRequestRepository>();
             var service = new RequestService(mockRepository.Object);
-            var request = new Request("Test Request", "Test Description") { Id = 1 };
+            var request = new Request("Test Request", "Test Description") { Id = -1 };
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => service.UpdateRequest(request));
@@ -119,6 +119,30 @@ namespace ServerManagerTests.RequestTests
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => service.UpdateRequest(null));
+        }
+
+        [Fact]
+        public void UpdateRequest_WithNullRequestTitle_ThrowsArgumentException()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRequestRepository>();
+            var service = new RequestService(mockRepository.Object);
+            var request = new Request(null, "Test Description") { Id = 1 } ;
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => service.UpdateRequest(request));
+        }
+
+        [Fact]
+        public void UpdateRequest_WithNullRequestDescription_ThrowsArgumentException()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRequestRepository>();
+            var service = new RequestService(mockRepository.Object);
+            var request = new Request("Test Title", null) { Id = 1 };
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => service.UpdateRequest(request));
         }
 
         [Fact]

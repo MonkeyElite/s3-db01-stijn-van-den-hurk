@@ -34,14 +34,14 @@ namespace ServerManagerCore.Services
 
         public Request UpdateRequest(Request request)
         {
-            if (request.Id <= 0)
-            {
-                throw new ArgumentException("Invalid id.");
-            }
-
             if (request == null || request.Title == null || request.Description == null)
             {
                 throw new ArgumentException("Missing request information.");
+            }
+
+            if (request.Id <= 0)
+            {
+                throw new ArgumentException("Invalid id.");
             }
 
             return _requestRepository.UpdateRequest(request);

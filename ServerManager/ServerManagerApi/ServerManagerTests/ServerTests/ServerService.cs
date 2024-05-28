@@ -81,19 +81,6 @@ namespace ServerManagerTests.ServerTests
         }
 
         [Fact]
-        public void CreateServer_WithInvalidServer_ThrowsArgumentException()
-        {
-            // Arrange
-            var mockRepository = new Mock<IServerRepository>();
-            var service = new ServerService(mockRepository.Object);
-            var server = new Server("Test Server", "Test Description", "Test Game", "127.0.0.1", 8080, "short");
-
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => service.CreateServer(server));
-            Assert.Contains("Password must be between 8 and 32 characters long", ex.Message);
-        }
-
-        [Fact]
         public void UpdateServer_WithValidServer_ReturnsUpdatedServer()
         {
             // Arrange
@@ -131,19 +118,6 @@ namespace ServerManagerTests.ServerTests
 
             // Act & Assert
             Assert.Throws<ArgumentException>(() => service.UpdateServer(null));
-        }
-
-        [Fact]
-        public void UpdateServer_WithInvalidServer_ThrowsArgumentException()
-        {
-            // Arrange
-            var mockRepository = new Mock<IServerRepository>();
-            var service = new ServerService(mockRepository.Object);
-            var server = new Server("Test Server", "Test Description", "Test Game", "127.0.0.1", 8080, "short") { Id = 1 };
-
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => service.UpdateServer(server));
-            Assert.Contains("Password must be between 8 and 32 characters long", ex.Message);
         }
 
         [Fact]

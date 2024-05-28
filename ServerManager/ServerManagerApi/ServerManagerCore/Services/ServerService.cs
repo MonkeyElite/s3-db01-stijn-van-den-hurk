@@ -24,7 +24,7 @@ namespace ServerManagerCore.Services
 
         public Server CreateServer(Server server)
         {
-            if (server == null || server.Title == null || server.Description == null)
+            if (server == null || server.Title == null || server.Description == null || server.GameName == null || server.Ip == null || server.Port == 0 || server.Password == null)
             {
                 throw new ArgumentException("Missing server information.");
             }
@@ -34,15 +34,15 @@ namespace ServerManagerCore.Services
 
         public Server UpdateServer(Server server)
         {
-            if (server.Id <= 0)
-            {
-                throw new ArgumentException("Invalid id.");
-            }
-
             if (server == null || server.Title == null || server.Description == null)
             {
                 throw new ArgumentException("Missing server information.");
             }
+
+            if (server.Id <= 0)
+            {
+                throw new ArgumentException("Invalid id.");
+            }            
 
             return _serverRepository.UpdateServer(server);
         }
