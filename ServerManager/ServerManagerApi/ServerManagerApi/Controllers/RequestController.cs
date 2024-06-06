@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServerManagerApi.ViewModels.Request;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
 
-namespace YourNamespace.Controllers
+namespace ServerManagerApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class RequestController(RequestService requestService) : ControllerBase
     {

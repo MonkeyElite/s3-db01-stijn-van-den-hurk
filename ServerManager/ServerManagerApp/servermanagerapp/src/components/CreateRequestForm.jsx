@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import requestApi from "../api/RequestApi";
 
 const CreateRequestForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const { getAccessTokenSilently } = useAuth0();
 
   const validateForm = () => {
     if (!title.trim() || !description.trim()) {
@@ -37,11 +39,9 @@ const CreateRequestForm = () => {
     };
 
     try {
-      await requestApi.postRequest(newRequest);
-      setTitle("");
-      setDescription("");
-      setErrorMessage("");
-      window.location.href = "/request";
+      const token = await getAccessTokenSilently();
+      await requestApi.postRequest(newRequest, token);
+      window.location.href = "/request"; // Assuming you want to redirect after successful creation
     } catch (error) {
       console.error("Error creating request:", error);
       setErrorMessage("Failed to create request. Please try again later.");

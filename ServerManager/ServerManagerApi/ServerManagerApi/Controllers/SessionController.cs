@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServerManagerApi.Models.Session;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
@@ -6,6 +7,7 @@ using ServerManagerCore.Services;
 namespace YourNamespace.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class SessionController(SessionService sessionService) : ControllerBase
     {

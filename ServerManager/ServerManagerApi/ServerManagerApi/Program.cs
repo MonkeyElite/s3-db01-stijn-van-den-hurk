@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using ServerManagerCore.Interfaces;
 using ServerManagerCore.Services;
 using ServerManagerDAL.Data;
 using ServerManagerDAL.Repositories;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,22 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowCredentials();
     });
+});
+
+var domain = $"https://{builder.Configuration["Auth0:Domain"]}/";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.Authority = domain;
+    options.Audience = builder.Configuration["Auth0:Audience"];
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        NameClaimType = ClaimTypes.NameIdentifier,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Auth0:Audience"],
+        ValidateLifetime = true
+    };
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -47,10 +66,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
-// Just for testing.
-app.UseSwagger();
-app.UseSwaggerUI();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

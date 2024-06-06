@@ -1,7 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const NavBar = ({ page }) => {
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+
   return (
     <nav className="bg-transparent mb-5 sticky top-0">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -41,6 +44,29 @@ const NavBar = ({ page }) => {
               >
                 Sessions
               </Link>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => logout({ returnTo: window.location.origin })}
+                  className="text-slate-500 hover:bg-slate-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => loginWithRedirect()}
+                    className="text-slate-500 hover:bg-slate-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => loginWithRedirect({ screen_hint: "signup" })}
+                    className="text-slate-500 hover:bg-slate-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                  >
+                    Register
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

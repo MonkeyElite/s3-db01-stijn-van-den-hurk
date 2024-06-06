@@ -25,6 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ServerManagerApi\ServerManagerApi.csproj" />
 		<ProjectReference Include="..\ServerManagerCore\ServerManagerCore.csproj" />
 	</ItemGroup>
 

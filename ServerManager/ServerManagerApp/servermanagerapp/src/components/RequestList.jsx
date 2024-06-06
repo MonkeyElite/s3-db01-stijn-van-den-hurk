@@ -1,28 +1,36 @@
 import React, { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import requestApi from "../api/RequestApi";
 import RequestItem from "./RequestItem";
 
 const RequestList = () => {
   const [requests, setRequests] = useState([]);
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await requestApi.fetchRequests();
+        const token = await getAccessTokenSilently();
+        const data = await requestApi.fetchRequests(token);
         setRequests(data);
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
     }
     fetchData();
-  }, []);
+  }, [getAccessTokenSilently]);
 
-  const handleDelete = (id) => {
-    setRequests(requests.filter((request) => request.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      const token = await getAccessTokenSilently();
+      await requestApi.deleteRequest(id, token);
+      setRequests(requests.filter((request) => request.id !== id));
+    } catch (error) {
+      console.error("Error deleting request:", error);
+    }
   };
 
   const handleUpdate = (id) => {
-    console.log(id);
     window.location.href = "/request/update/" + id;
   };
 

@@ -1,20 +1,54 @@
 import React, { useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import requestApi from "../api/RequestApi";
 
 const UpdateRequestForm = ({ request }) => {
   const [title, setTitle] = useState(request.title);
   const [description, setDescription] = useState(request.description);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { getAccessTokenSilently } = useAuth0();
+
+  const validateForm = () => {
+    if (!title.trim() || !description.trim()) {
+      setErrorMessage("Title and description are required.");
+      return false;
+    }
+    if (title.length > 255) {
+      setErrorMessage("Title must be less than or equal to 255 characters.");
+      return false;
+    }
+    if (description.length > 10000) {
+      setErrorMessage(
+        "Description must be less than or equal to 10000 characters."
+      );
+      return false;
+    }
+    return true;
+  };
 
   const updateRequest = async (e) => {
     e.preventDefault();
-    const newRequest = { title, description };
-    await requestApi.putRequest(request.id, newRequest);
-    window.location.href = "/request";
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const updatedRequest = { title, description };
+
+    try {
+      const token = await getAccessTokenSilently();
+      await requestApi.putRequest(request.id, updatedRequest, token);
+      window.location.href = "/request";
+    } catch (error) {
+      console.error("Error updating request:", error);
+      setErrorMessage("Failed to update request. Please try again later.");
+    }
   };
 
   return (
     <div style={{ marginBottom: "20px" }}>
       <h2 className="text-white">Update Request</h2>
+      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
       <form onSubmit={updateRequest} style={formStyle}>
         <input
           type="text"
