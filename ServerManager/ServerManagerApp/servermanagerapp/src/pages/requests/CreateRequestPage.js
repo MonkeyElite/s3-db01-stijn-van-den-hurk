@@ -1,4 +1,4 @@
-import RequestForm from "../../components/CreateRequestForm";
+import RequestForm from "../../components/Request/CreateRequestForm";
 import NavBar from "../../components/navbar";
 
 function CreateRequestPage() {

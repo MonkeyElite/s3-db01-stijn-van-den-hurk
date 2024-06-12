@@ -10,6 +10,11 @@ import RequestInfoPage from "./pages/requests/RequestInfoPage";
 
 import SessionsPage from "./pages/SessionsPage";
 
+import ServersPage from "./pages/ServersPage";
+import CreateServerPage from "./pages/servers/CreateServerPage";
+import UpdateServerPage from "./pages/servers/UpdateServerPage";
+import ServerInfoPage from "./pages/servers/ServerInfoPage";
+
 function App() {
   return (
     <Router>
@@ -20,7 +25,11 @@ function App() {
           <Route path="/request/create" element={<CreateRequestPage />} />
           <Route path="/request/update/:id" element={<UpdateRequestPage />} />
           <Route path="/request/info/:id" element={<RequestInfoPage />} />
-          <Route path="/sessions" element={<SessionsPage />} />
+          <Route path="/session" element={<SessionsPage />} />
+          <Route path="/server" element={<ServersPage />} />
+          <Route path="/server/create" element={<CreateServerPage />} />
+          <Route path="/server/update/:id" element={<UpdateServerPage />} />
+          <Route path="/server/info/:id" element={<ServerInfoPage />} />
         </Routes>
       </div>
     </Router>

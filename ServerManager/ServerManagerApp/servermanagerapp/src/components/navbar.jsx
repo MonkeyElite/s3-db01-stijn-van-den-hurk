@@ -34,15 +34,26 @@ const NavBar = ({ page }) => {
                 Request
               </Link>
               <Link
-                to="/sessions"
+                to="/session"
                 className={`${
-                  page === "Sessions"
+                  page === "Session"
                     ? "bg-gray-900 text-white"
                     : "text-slate-500 hover:bg-slate-800 hover:text-white"
                 } rounded-md px-3 py-2 text-sm font-medium`}
-                aria-current={page === "Sessions" ? "page" : undefined}
+                aria-current={page === "Session" ? "page" : undefined}
               >
                 Sessions
+              </Link>
+              <Link
+                to="/server"
+                className={`${
+                  page === "Server"
+                    ? "bg-gray-900 text-white"
+                    : "text-slate-500 hover:bg-slate-800 hover:text-white"
+                } rounded-md px-3 py-2 text-sm font-medium`}
+                aria-current={page === "Server" ? "page" : undefined}
+              >
+                Servers
               </Link>
               {isAuthenticated ? (
                 <button

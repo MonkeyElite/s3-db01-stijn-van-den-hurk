@@ -2,14 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaTrashAlt, FaPen } from "react-icons/fa";
 import { useAuth0 } from "@auth0/auth0-react";
-import requestApi from "../api/RequestApi";
+import requestApi from "../../api/RequestApi";
 
 const RequestItem = ({ request, onDelete, onUpdate }) => {
   const { getAccessTokenSilently } = useAuth0();
 
   const deleteRequest = async (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Stop propagation to prevent Link click
+    e.stopPropagation();
 
     try {
       const token = await getAccessTokenSilently();
@@ -17,13 +17,12 @@ const RequestItem = ({ request, onDelete, onUpdate }) => {
       onDelete(request.id);
     } catch (error) {
       console.error("Error deleting request:", error);
-      // Handle the error accordingly
     }
   };
 
   const updateRequest = (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Stop propagation to prevent Link click
+    e.stopPropagation();
     onUpdate(request.id);
   };
 

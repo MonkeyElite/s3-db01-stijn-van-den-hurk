@@ -32,7 +32,7 @@ namespace ServerManagerApi.Controllers
         {
             try
             {
-                Request request = _requestService.GetRequestById(id);
+                RequestViewModel request = new(_requestService.GetRequestById(id));
 
                 if (request == null)
                 {
@@ -48,7 +48,7 @@ namespace ServerManagerApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<RequestViewModel> Post([FromBody] Request request)
+        public ActionResult<RequestViewModel> Post([FromBody] RequestViewModel request)
         {
             if (!ModelState.IsValid)
             {
@@ -61,14 +61,15 @@ namespace ServerManagerApi.Controllers
                 return CreatedAtAction(nameof(Get), createRequest);
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Request request)
+        public IActionResult Put(int id, [FromBody] RequestViewModel requestViewModel)
         {
+            Request request = new Request(requestViewModel.Title, requestViewModel.Description);
             request.Id = id;
 
             if (!ModelState.IsValid)
@@ -78,14 +79,14 @@ namespace ServerManagerApi.Controllers
 
             try
             {
-                var existingRequest = _requestService.GetRequestById(id);
+                Request existingRequest = _requestService.GetRequestById(id);
 
                 if (existingRequest == null)
                 {
                     return NotFound();
                 }
 
-                var updatedRequest = _requestService.UpdateRequest(request);
+                RequestViewModel updatedRequest = new (_requestService.UpdateRequest(request));
                 return Ok(updatedRequest);
             } catch (Exception ex)
             {
@@ -97,7 +98,7 @@ namespace ServerManagerApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existingRequest = _requestService.GetRequestById(id);
+            Request existingRequest = _requestService.GetRequestById(id);
 
             if (existingRequest == null)
             {

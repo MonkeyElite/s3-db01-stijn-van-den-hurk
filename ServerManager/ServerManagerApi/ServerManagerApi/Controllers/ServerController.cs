@@ -22,17 +22,17 @@ namespace YourNamespace.Controllers
                 return Ok(servers);
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Server> Get(int id)
+        public ActionResult<ServerViewModel> Get(int id)
         {
             try
             {
-                Server server = _serverService.GetServerById(id);
+                ServerViewModel server = new(_serverService.GetServerById(id));
 
                 if (server == null)
                 {
@@ -48,7 +48,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ServerViewModel> Post([FromBody] Server server)
+        public ActionResult<ServerViewModel> Post([FromBody] ServerViewModel server)
         {
             if (!ModelState.IsValid)
             {
@@ -57,18 +57,21 @@ namespace YourNamespace.Controllers
 
             try
             {
-                ServerViewModel createServer = new (_serverService.CreateServer(new Server(server.Title, server.Description, server.GameName, server.Ip, server.Port, server.Password)));
-                return CreatedAtAction(nameof(Get), createServer);
-            } catch (Exception ex)
+                var createdServer = _serverService.CreateServer(new Server(server.Title, server.Description, server.GameName, server.Ip, server.Port, server.Password));
+                var createServer = new ServerViewModel(createdServer);
+                return CreatedAtAction(nameof(Get), new { id = createdServer.Id }, createServer);
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Server server)
+        public IActionResult Put(int id, [FromBody] ServerViewModel serverViewModel)
         {
+            Server server = new Server(serverViewModel.Title, serverViewModel.Description, serverViewModel.GameName, serverViewModel.Ip, serverViewModel.Port, serverViewModel.Password);
             server.Id = id;
 
             if (!ModelState.IsValid)
@@ -78,18 +81,18 @@ namespace YourNamespace.Controllers
 
             try
             {
-                var existingServer = _serverService.GetServerById(id);
+                Server existingServer = _serverService.GetServerById(id);
 
                 if (existingServer == null)
                 {
                     return NotFound();
                 }
 
-                var updatedServer = _serverService.UpdateServer(server);
+                ServerViewModel updatedServer = new (_serverService.UpdateServer(server));
                 return Ok(updatedServer);
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -97,7 +100,7 @@ namespace YourNamespace.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existingServer = _serverService.GetServerById(id);
+            Server existingServer = _serverService.GetServerById(id);
 
             if (existingServer == null)
             {
@@ -110,7 +113,7 @@ namespace YourNamespace.Controllers
                 return Ok();
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

@@ -28,11 +28,11 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Session> Get(int id)
+        public ActionResult<SessionViewModel> Get(int id)
         {
             try
             {
-                Session session = _sessionService.GetSessionById(id);
+                SessionViewModel session = new (_sessionService.GetSessionById(id));
 
                 if (session == null)
                 {
@@ -48,7 +48,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public ActionResult<SessionViewModel> Post([FromBody] Session session)
+        public ActionResult<SessionViewModel> Post([FromBody] SessionViewModel session)
         {
             if (!ModelState.IsValid)
             {
@@ -67,8 +67,9 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Session session)
+        public IActionResult Put(int id, [FromBody] SessionViewModel sessionViewModel)
         {
+            Session session = new Session(sessionViewModel.Title, sessionViewModel.Description, sessionViewModel.StartTime, sessionViewModel.EndTime, sessionViewModel.ServerId);
             session.Id = id;
 
             if (!ModelState.IsValid)
@@ -78,14 +79,14 @@ namespace YourNamespace.Controllers
 
             try
             {
-                var existingSession = _sessionService.GetSessionById(id);
+                Session existingSession = _sessionService.GetSessionById(id);
 
                 if (existingSession == null)
                 {
                     return NotFound();
                 }
 
-                var updatedSession = _sessionService.UpdateSession(session);
+                SessionViewModel updatedSession = new(_sessionService.UpdateSession(session));
                 return Ok(updatedSession);
             } catch (Exception ex)
             {
@@ -97,7 +98,7 @@ namespace YourNamespace.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existingSession = _sessionService.GetSessionById(id);
+            Session existingSession = _sessionService.GetSessionById(id);
 
             if (existingSession == null)
             {

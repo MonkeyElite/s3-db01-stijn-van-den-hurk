@@ -1,16 +1,14 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
+  servermanager-api:
+    build: 
+      context: ./
+      dockerfile: ServerManagerApi/dockerfile
     ports:
       - "5000:5000"
-    networks:
-      - appnetwork
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=YourDatabase;User Id=sa;Password=YourStrong!Passw0rd;
 
-  db:
+  regenmeter-db:
     image: mcr.microsoft.com/azure-sql-edge:latest
     environment:
       - ACCEPT_EULA=Y
@@ -18,13 +16,8 @@ services:
       - MSSQL_PID=Developer
     ports:
       - "1433:1433"
-    networks:
-      - appnetwork
     volumes:
       - sql_data:/var/opt/mssql
-
-networks:
-  appnetwork:
 
 volumes:
   sql_data:

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 import requestApi from "../../api/RequestApi";
 
 import NavBar from "../../components/navbar";
@@ -9,10 +10,13 @@ const RequestInfoPage = () => {
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const { getAccessTokenSilently } = useAuth0();
+
   useEffect(() => {
     const fetchRequest = async () => {
       try {
-        const response = await requestApi.fetchRequestById(id);
+        const token = await getAccessTokenSilently();
+        const response = await requestApi.fetchRequestById(id, token);
         setRequest(response);
       } catch (error) {
         console.error("Error fetching request:", error);
