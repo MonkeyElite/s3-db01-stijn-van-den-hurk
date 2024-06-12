@@ -36,12 +36,12 @@ const CreateServerForm = () => {
     }
 
     const newServer = {
-      Title: title.trim(),
-      Description: description.trim(),
-      GameName: gameName.trim(),
-      Ip: ip.trim(),
-      Port: parseInt(port.trim(), 10),
-      Password: password.trim(),
+      title: title.trim(),
+      description: description.trim(),
+      gameName: gameName.trim(),
+      ip: ip.trim(),
+      port: parseInt(port.trim(), 10),
+      password: password.trim(),
     };
 
     try {

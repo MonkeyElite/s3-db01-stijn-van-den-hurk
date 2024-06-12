@@ -22,7 +22,7 @@ namespace ServerManagerApi.Controllers
                 return Ok(requests);
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
