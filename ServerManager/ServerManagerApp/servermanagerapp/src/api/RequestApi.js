@@ -49,7 +49,7 @@ const requestApi = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Include access token
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(request),
       });

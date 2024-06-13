@@ -1,148 +1,186 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
-using YourNamespace.Controllers;
-using ServerManagerCore.Models;
-using ServerManagerCore.Services;
+using Newtonsoft.Json;
 using ServerManagerApi.Models.Session;
 using ServerManagerCore.Interfaces;
+using ServerManagerCore.Models;
+using System.Net;
+using System.Text;
 
 namespace ServerManagerTests.SessionTests
 {
-    public class SessionControllerTests
+    public class SessionControllerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        private readonly Mock<ISessionRepository> _mockSessionRepository;
-        private readonly SessionService _sessionService;
-        private readonly SessionController _controller;
+        private readonly WebApplicationFactory<Program> _factory;
+        private readonly Mock<ISessionRepository> _sessionRepositoryMock;
 
-        public SessionControllerTests()
+        public SessionControllerIntegrationTests(WebApplicationFactory<Program> factory)
         {
-            _mockSessionRepository = new Mock<ISessionRepository>();
-            _sessionService = new SessionService(_mockSessionRepository.Object);
-            _controller = new SessionController(_sessionService);
+            _sessionRepositoryMock = new Mock<ISessionRepository>();
+
+            _factory = factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(services =>
+                {
+                    services.RemoveAll<ISessionRepository>();
+
+                    services.AddSingleton(_sessionRepositoryMock.Object);
+                });
+            });
+        }
+
+        private HttpClient CreateClient()
+        {
+            return _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
         }
 
         [Fact]
-        public void Get_ReturnsOkResult_WithListOfSessions()
+        public async Task Get_ReturnsOkResult_WithListOfSessions()
         {
             // Arrange
-            List<Session> sessions = new List<Session>
+            var client = CreateClient();
+            var sessions = new List<Session>
             {
                 new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 }
             };
-            _mockSessionRepository.Setup(repo => repo.GetSessions()).Returns(sessions);
+            _sessionRepositoryMock.Setup(repo => repo.GetSessions()).Returns(sessions);
 
             // Act
-            var result = _controller.Get();
+            var response = await client.GetAsync("/api/Session");
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnValue = Assert.IsType<List<Session>>(okResult.Value);
-            Assert.Single(returnValue);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<List<SessionViewModel>>(responseString);
+            result.Should().HaveCount(1);
         }
 
         [Fact]
-        public void Get_ReturnsNotFoundResult_WhenSessionNotFound()
+        public async Task Get_ReturnsNotFoundResult_WhenSessionNotFound()
         {
             // Arrange
-            _mockSessionRepository.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns((Session)null);
+            var client = CreateClient();
+            _sessionRepositoryMock.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns((Session)null);
 
             // Act
-            var result = _controller.Get(1);
+            var response = await client.GetAsync("/api/Session/1");
 
             // Assert
-            Assert.IsType<NotFoundResult>(result.Result);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public void Post_ReturnsCreatedAtActionResult_WhenSessionIsValid()
+        public async Task Post_ReturnsCreatedAtActionResult_WhenSessionIsValid()
         {
             // Arrange
-            Session session = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1);
-            Session createdSession = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
-            _mockSessionRepository.Setup(repo => repo.CreateSession(It.IsAny<Session>())).Returns(createdSession);
+            var client = CreateClient();
+            var session = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1);
+            var createdSession = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
+            _sessionRepositoryMock.Setup(repo => repo.CreateSession(It.IsAny<Session>())).Returns(createdSession);
+
+            var sessionViewModel = new SessionViewModel(session.Title, session.Description, session.StartTime, session.EndTime, session.ServerId);
+            var content = new StringContent(JsonConvert.SerializeObject(sessionViewModel), Encoding.UTF8, "application/json");
 
             // Act
-            var result = _controller.Post(new SessionViewModel (session));
+            var response = await client.PostAsync("/api/Session", content);
 
             // Assert
-            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
-            var returnValue = Assert.IsType<SessionViewModel>(createdAtActionResult.Value);
-            Assert.Equal(createdSession.Title, returnValue.Title);
-            Assert.Equal(createdSession.Description, returnValue.Description);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<SessionViewModel>(responseString);
+            result.Title.Should().Be(createdSession.Title);
+            result.Description.Should().Be(createdSession.Description);
         }
 
         [Fact]
-        public void Post_ReturnsBadRequest_WhenModelIsInvalid()
+        public async Task Post_ReturnsBadRequest_WhenModelIsInvalid()
         {
             // Arrange
-            _controller.ModelState.AddModelError("Title", "Required");
+            var client = CreateClient();
+            var sessionViewModel = new SessionViewModel(null, "Description", DateTime.Now, DateTime.Now.AddHours(1), 1);
+            var content = new StringContent(JsonConvert.SerializeObject(sessionViewModel), Encoding.UTF8, "application/json");
 
             // Act
-            var result = _controller.Post(new SessionViewModel(new Session("", "Description", DateTime.Now, DateTime.Now.AddHours(1), 1)));
+            var response = await client.PostAsync("/api/Session", content);
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result.Result);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
-        public void Put_ReturnsOkResult_WhenSessionIsValid()
+        public async Task Put_ReturnsOkResult_WhenSessionIsValid()
         {
             // Arrange
-            Session session = new Session("Updated Title", "Updated Description", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
-            Session existingSession = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
-            _mockSessionRepository.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns(existingSession);
-            _mockSessionRepository.Setup(repo => repo.UpdateSession(It.IsAny<Session>())).Returns(session);
+            var client = CreateClient();
+            var session = new Session("Updated Title", "Updated Description", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
+            var existingSession = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
+            _sessionRepositoryMock.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns(existingSession);
+            _sessionRepositoryMock.Setup(repo => repo.UpdateSession(It.IsAny<Session>())).Returns(session);
+
+            var sessionViewModel = new SessionViewModel(session.Title, session.Description, session.StartTime, session.EndTime, session.ServerId);
+            var content = new StringContent(JsonConvert.SerializeObject(sessionViewModel), Encoding.UTF8, "application/json");
 
             // Act
-            var result = _controller.Put(1, new SessionViewModel( session));
+            var response = await client.PutAsync("/api/Session/1", content);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<Session>(okResult.Value);
-            Assert.Equal(session.Title, returnValue.Title);
-            Assert.Equal(session.Description, returnValue.Description);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<SessionViewModel>(responseString);
+            result.Title.Should().Be(session.Title);
+            result.Description.Should().Be(session.Description);
         }
 
         [Fact]
-        public void Put_ReturnsNotFoundResult_WhenSessionNotFound()
+        public async Task Put_ReturnsNotFoundResult_WhenSessionNotFound()
         {
             // Arrange
-            _mockSessionRepository.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns((Session)null);
+            var client = CreateClient();
+            var sessionViewModel = new SessionViewModel("Updated Title", "Updated Description", DateTime.Now, DateTime.Now.AddHours(1), 1);
+            var content = new StringContent(JsonConvert.SerializeObject(sessionViewModel), Encoding.UTF8, "application/json");
+            _sessionRepositoryMock.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns((Session)null);
 
             // Act
-            var result = _controller.Put(1, new SessionViewModel(new Session("Updated Title", "Updated Description", DateTime.Now, DateTime.Now.AddHours(1), 1)));
+            var response = await client.PutAsync("/api/Session/1", content);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public void Delete_ReturnsOkResult_WhenSessionIsDeleted()
+        public async Task Delete_ReturnsOkResult_WhenSessionIsDeleted()
         {
             // Arrange
-            Session existingSession = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
-            _mockSessionRepository.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns(existingSession);
-            _mockSessionRepository.Setup(repo => repo.DeleteSession(It.IsAny<int>())).Returns(true);
+            var client = CreateClient();
+            var existingSession = new Session("Title1", "Description1", DateTime.Now, DateTime.Now.AddHours(1), 1) { Id = 1 };
+            _sessionRepositoryMock.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns(existingSession);
+            _sessionRepositoryMock.Setup(repo => repo.DeleteSession(It.IsAny<int>())).Returns(true);
 
             // Act
-            var result = _controller.Delete(1);
+            var response = await client.DeleteAsync("/api/Session/1");
 
             // Assert
-            Assert.IsType<OkResult>(result);
-            _mockSessionRepository.Verify(repo => repo.DeleteSession(It.IsAny<int>()), Times.Once);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
-        public void Delete_ReturnsNotFoundResult_WhenSessionNotFound()
+        public async Task Delete_ReturnsNotFoundResult_WhenSessionNotFound()
         {
             // Arrange
-            _mockSessionRepository.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns((Session)null);
+            var client = CreateClient();
+            _sessionRepositoryMock.Setup(repo => repo.GetSessionById(It.IsAny<int>())).Returns((Session)null);
 
             // Act
-            var result = _controller.Delete(1);
+            var response = await client.DeleteAsync("/api/Session/1");
 
             // Assert
-            Assert.IsType<NotFoundResult>(result);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }

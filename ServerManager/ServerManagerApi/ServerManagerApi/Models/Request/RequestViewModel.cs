@@ -1,8 +1,10 @@
-﻿namespace ServerManagerApi.ViewModels.Request
+﻿using System.Reflection;
+
+namespace ServerManagerApi.ViewModels.Request
 {
-    public class RequestViewModel(ServerManagerCore.Models.Request request)
+    public class RequestViewModel(string title, string description)
     {
-        public string Title { get; set; } = request.Title;
-        public string Description { get; set; } = request.Description;
+        public string Title { get; set; } = title;
+        public string Description { get; set; } = description;
     }
 }

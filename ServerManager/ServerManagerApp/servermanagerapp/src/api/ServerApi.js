@@ -25,6 +25,7 @@ const serverApi = {
 
   fetchServerById: async (id, token) => {
     try {
+      console.log("Winfajsndjs")
       const response = await fetch(`${baseUrl}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,

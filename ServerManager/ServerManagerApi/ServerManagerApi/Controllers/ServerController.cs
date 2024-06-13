@@ -4,23 +4,29 @@ using ServerManagerApi.Models.Server;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
 
-namespace YourNamespace.Controllers
+namespace ServerManagerApi.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
-    public class ServerController(ServerService serverService) : ControllerBase
+    public class ServerController : ControllerBase
     {
-        private readonly ServerService _serverService = serverService;
+        private readonly ServerService _serverService;
+
+        public ServerController(ServerService serverService)
+        {
+            _serverService = serverService;
+        }
 
         [HttpGet]
-        public ActionResult<Server> Get()
+        public ActionResult<List<Server>> Get()
         {
             try
             {
                 List<Server> servers = _serverService.GetServers();
                 return Ok(servers);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
@@ -32,15 +38,16 @@ namespace YourNamespace.Controllers
         {
             try
             {
-                ServerViewModel server = new(_serverService.GetServerById(id));
-
+                Server server = _serverService.GetServerById(id);
                 if (server == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(server);
-            } catch (Exception ex)
+                ServerViewModel serverViewModel = new ServerViewModel(server.Title, server.Description, server.GameName, server.Ip, server.Port, server.Password);
+                return Ok(serverViewModel);
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
@@ -53,17 +60,17 @@ namespace YourNamespace.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            };
+            }
 
             try
             {
-                var createdServer = _serverService.CreateServer(new Server(server.Title, server.Description, server.GameName, server.Ip, server.Port, server.Password));
-                var createServer = new ServerViewModel(createdServer);
-                return CreatedAtAction(nameof(Get), new { id = createdServer.Id }, createServer);
+                Server createdServer = _serverService.CreateServer(new Server(server.Title, server.Description, server.GameName, server.Ip, server.Port, server.Password));
+                ServerViewModel createdServerViewModel = new ServerViewModel(createdServer.Title, createdServer.Description, createdServer.GameName, createdServer.Ip, createdServer.Port, createdServer.Password);
+                return CreatedAtAction(nameof(Get), new { id = createdServer.Id }, createdServerViewModel);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message); // Log the error
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -77,22 +84,23 @@ namespace YourNamespace.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            };
+            }
 
             try
             {
                 Server existingServer = _serverService.GetServerById(id);
-
                 if (existingServer == null)
                 {
                     return NotFound();
                 }
 
-                ServerViewModel updatedServer = new (_serverService.UpdateServer(server));
-                return Ok(updatedServer);
-            } catch (Exception ex)
+                Server updatedServer = _serverService.UpdateServer(server);
+                ServerViewModel updatedServerViewModel = new ServerViewModel(updatedServer.Title, updatedServer.Description, updatedServer.GameName, updatedServer.Ip, updatedServer.Port, updatedServer.Password);
+                return Ok(updatedServerViewModel);
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message); // Log the error
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -111,9 +119,10 @@ namespace YourNamespace.Controllers
             {
                 _serverService.DeleteServer(id);
                 return Ok();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message); // Log the error
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

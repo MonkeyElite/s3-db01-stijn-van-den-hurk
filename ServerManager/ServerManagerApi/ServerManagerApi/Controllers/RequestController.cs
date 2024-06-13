@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ServerManagerApi.ViewModels.Request;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
@@ -7,20 +6,34 @@ using ServerManagerCore.Services;
 namespace ServerManagerApi.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
-    public class RequestController(RequestService requestService) : ControllerBase
+    public class RequestController : ControllerBase
     {
-        private readonly RequestService _requestService = requestService;
+        private readonly RequestService _requestService;
+
+        public RequestController(RequestService requestService)
+        {
+            _requestService = requestService;
+        }
 
         [HttpGet]
-        public ActionResult<Request> Get()
+        public ActionResult<IEnumerable<RequestViewModel>> Get()
         {
             try
             {
-                List<Request> requests = _requestService.GetRequests();
+                var requests = _requestService.GetRequests()
+                    .Select(request => new RequestViewModel(request.Title, request.Description))
+                    .ToList();
+
+                if (requests.Count == 0)
+                {
+                    return NotFound();
+                }
+
                 return Ok(requests);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
@@ -28,19 +41,20 @@ namespace ServerManagerApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Request> Get(int id)
+        public ActionResult<RequestViewModel> Get(int id)
         {
             try
             {
-                RequestViewModel request = new(_requestService.GetRequestById(id));
+                var request = _requestService.GetRequestById(id);
 
                 if (request == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(request);
-            } catch (Exception ex)
+                return Ok(new RequestViewModel(request.Title, request.Description));
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
@@ -48,57 +62,62 @@ namespace ServerManagerApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<RequestViewModel> Post([FromBody] RequestViewModel request)
+        public ActionResult<RequestViewModel> Post([FromBody] RequestViewModel requestViewModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            };
+            }
 
             try
             {
-                RequestViewModel createRequest = new (_requestService.CreateRequest(new Request(request.Title, request.Description)));
-                return CreatedAtAction(nameof(Get), createRequest);
-            } catch (Exception ex)
+                var createdRequest = _requestService.CreateRequest(new Request(requestViewModel.Title, requestViewModel.Description));
+                var createdViewModel = new RequestViewModel(createdRequest.Title, createdRequest.Description);
+                return CreatedAtAction(nameof(Get), new { id = createdRequest.Id }, createdViewModel);
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] RequestViewModel requestViewModel)
         {
-            Request request = new Request(requestViewModel.Title, requestViewModel.Description);
-            request.Id = id;
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            };
+            }
 
             try
             {
-                Request existingRequest = _requestService.GetRequestById(id);
+                var existingRequest = _requestService.GetRequestById(id);
 
                 if (existingRequest == null)
                 {
                     return NotFound();
                 }
 
-                RequestViewModel updatedRequest = new (_requestService.UpdateRequest(request));
-                return Ok(updatedRequest);
-            } catch (Exception ex)
+                existingRequest.Title = requestViewModel.Title;
+                existingRequest.Description = requestViewModel.Description;
+
+                var updatedRequest = _requestService.UpdateRequest(existingRequest);
+                var updatedViewModel = new RequestViewModel(updatedRequest.Title, updatedRequest.Description);
+
+                return Ok(updatedViewModel);
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            Request existingRequest = _requestService.GetRequestById(id);
+            var existingRequest = _requestService.GetRequestById(id);
 
             if (existingRequest == null)
             {
@@ -109,9 +128,10 @@ namespace ServerManagerApi.Controllers
             {
                 _requestService.DeleteRequest(id);
                 return Ok();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

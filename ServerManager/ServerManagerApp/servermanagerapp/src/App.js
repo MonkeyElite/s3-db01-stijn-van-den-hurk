@@ -6,7 +6,7 @@ import HomePage from "./pages/HomePage";
 import RequestPage from "./pages/RequestPage";
 import CreateRequestPage from "./pages/requests/CreateRequestPage";
 import UpdateRequestPage from "./pages/requests/UpdateRequestPage";
-import RequestInfoPage from "./pages/requests/UpdateRequestPage";
+import RequestInfoPage from "./pages/requests/RequestInfoPage";
 
 import SessionsPage from "./pages/SessionsPage";
 

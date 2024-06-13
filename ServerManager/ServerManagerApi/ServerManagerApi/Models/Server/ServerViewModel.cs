@@ -1,12 +1,12 @@
 ﻿namespace ServerManagerApi.Models.Server
 {
-    public class ServerViewModel(ServerManagerCore.Models.Server server)
+    public class ServerViewModel(string title, string description, string gameName, string ip, int port, string password)
     {
-        public string Title { get; set; } = server.Title;
-        public string Description { get; set; } = server.Description;
-        public string GameName { get; set; } = server.GameName;
-        public string Ip { get; set; } = server.Ip;
-        public int Port { get; set; } = server.Port;
-        public string Password { get; set; } = server.Password;
+        public string Title { get; set; } = title;
+        public string Description { get; set; } = description;
+        public string GameName { get; set; } = gameName;
+        public string Ip { get; set; } = ip;
+        public int Port { get; set; } = port;
+        public string Password { get; set; } = password;
     }
 }

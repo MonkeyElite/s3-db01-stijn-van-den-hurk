@@ -4,25 +4,31 @@ using ServerManagerApi.Models.Session;
 using ServerManagerCore.Models;
 using ServerManagerCore.Services;
 
-namespace YourNamespace.Controllers
+namespace ServerManagerApi.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
-    public class SessionController(SessionService sessionService) : ControllerBase
+    public class SessionController : ControllerBase
     {
-        private readonly SessionService _sessionService = sessionService;
+        private readonly SessionService _sessionService;
+
+        public SessionController(SessionService sessionService)
+        {
+            _sessionService = sessionService;
+        }
 
         [HttpGet]
-        public ActionResult<Session> Get()
+        public ActionResult<List<Session>> Get()
         {
             try
             {
                 List<Session> sessions = _sessionService.GetSessions();
                 return Ok(sessions);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -32,15 +38,16 @@ namespace YourNamespace.Controllers
         {
             try
             {
-                SessionViewModel session = new (_sessionService.GetSessionById(id));
-
+                Session session = _sessionService.GetSessionById(id);
                 if (session == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(session);
-            } catch (Exception ex)
+                SessionViewModel sessionViewModel = new SessionViewModel(session.Title, session.Description, session.StartTime, session.EndTime, session.ServerId);
+                return Ok(sessionViewModel);
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
@@ -53,15 +60,17 @@ namespace YourNamespace.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            };
+            }
 
             try
             {
-                SessionViewModel createSession = new (_sessionService.CreateSession(new Session(session.Title, session.Description, session.StartTime, session.EndTime, session.ServerId)));
-                return CreatedAtAction(nameof(Get), createSession);
-            } catch (Exception ex)
+                Session createdSession = _sessionService.CreateSession(new Session(session.Title, session.Description, session.StartTime, session.EndTime, session.ServerId));
+                SessionViewModel createdSessionViewModel = new SessionViewModel(createdSession.Title, createdSession.Description, createdSession.StartTime, createdSession.EndTime, createdSession.ServerId);
+                return CreatedAtAction(nameof(Get), new { id = createdSession.Id }, createdSessionViewModel);
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message); // Log the error
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -75,22 +84,23 @@ namespace YourNamespace.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            };
+            }
 
             try
             {
                 Session existingSession = _sessionService.GetSessionById(id);
-
                 if (existingSession == null)
                 {
                     return NotFound();
                 }
 
-                SessionViewModel updatedSession = new(_sessionService.UpdateSession(session));
-                return Ok(updatedSession);
-            } catch (Exception ex)
+                Session updatedSession = _sessionService.UpdateSession(session);
+                SessionViewModel updatedSessionViewModel = new SessionViewModel(updatedSession.Title, updatedSession.Description, updatedSession.StartTime, updatedSession.EndTime, updatedSession.ServerId);
+                return Ok(updatedSessionViewModel);
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message); // Log the error
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -109,9 +119,10 @@ namespace YourNamespace.Controllers
             {
                 _sessionService.DeleteSession(id);
                 return Ok();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Temp Solution
+                Console.WriteLine(ex.Message); // Log the error
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
