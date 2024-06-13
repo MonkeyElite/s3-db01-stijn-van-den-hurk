@@ -59,7 +59,7 @@ namespace ServerManagerTests.RequestTests
             _mockRequestRepository.Setup(repo => repo.CreateRequest(It.IsAny<Request>())).Returns(createdRequest);
 
             // Act
-            var result = _controller.Post(request);
+            var result = _controller.Post(new RequestViewModel(request));
 
             // Assert
             var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -75,7 +75,7 @@ namespace ServerManagerTests.RequestTests
             _controller.ModelState.AddModelError("Title", "Required");
 
             // Act
-            var result = _controller.Post(new Request("", "Test Description"));
+            var result = _controller.Post(new RequestViewModel(new Request("", "Test Description")));
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -91,7 +91,7 @@ namespace ServerManagerTests.RequestTests
             _mockRequestRepository.Setup(repo => repo.UpdateRequest(It.IsAny<Request>())).Returns(request);
 
             // Act
-            var result = _controller.Put(1, request);
+            var result = _controller.Put(1, new RequestViewModel(request));
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -107,7 +107,7 @@ namespace ServerManagerTests.RequestTests
             _mockRequestRepository.Setup(repo => repo.GetRequestById(It.IsAny<int>())).Returns((Request)null);
 
             // Act
-            var result = _controller.Put(1, new Request("Updated Title", "Updated Description"));
+            var result = _controller.Put(1, new RequestViewModel(new Request("Updated Title", "Updated Description")));
 
             // Assert
             Assert.IsType<NotFoundResult>(result);

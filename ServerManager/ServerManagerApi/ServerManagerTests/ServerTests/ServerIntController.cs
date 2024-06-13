@@ -25,7 +25,7 @@ namespace ServerManagerTests.ServerTests
         public void Get_ReturnsOkResult_WithListOfServers()
         {
             // Arrange
-            var servers = new List<Server>
+            List<Server> servers = new List<Server>
             {
                 new Server("Title1", "Description1", "Game1", "127.0.0.1", 8080, "password1") { Id = 1 }
             };
@@ -57,12 +57,12 @@ namespace ServerManagerTests.ServerTests
         public void Post_ReturnsCreatedAtActionResult_WhenServerIsValid()
         {
             // Arrange
-            var server = new Server("Title1", "Description1", "Game1", "127.0.0.1", 8080, "password1");
-            var createdServer = new Server("Title1", "Description1", "Game1", "127.0.0.1", 8080, "password1") { Id = 1 };
+            Server server = new Server("Title1", "Description1", "Game1", "127.0.0.1", 8080, "password1");
+            Server createdServer = new Server("Title1", "Description1", "Game1", "127.0.0.1", 8080, "password1") { Id = 1 };
             _mockServerRepository.Setup(repo => repo.CreateServer(It.IsAny<Server>())).Returns(createdServer);
 
             // Act
-            var result = _controller.Post(server);
+            var result = _controller.Post(new ServerViewModel (server));
 
             // Assert
             var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -78,7 +78,7 @@ namespace ServerManagerTests.ServerTests
             _controller.ModelState.AddModelError("Title", "Required");
 
             // Act
-            var result = _controller.Post(new Server("", "Description", "Game", "127.0.0.1", 8080, "password"));
+            var result = _controller.Post(new ServerViewModel(new Server("", "Description", "Game", "127.0.0.1", 8080, "password")));
 
             // Assert
             Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -88,13 +88,13 @@ namespace ServerManagerTests.ServerTests
         public void Put_ReturnsOkResult_WhenServerIsValid()
         {
             // Arrange
-            var server = new Server("Updated Title", "Updated Description", "Game1", "127.0.0.1", 8080, "password1") { Id = 1 };
-            var existingServer = new Server("Title1", "Description1", "Game1", "127.0.0.1", 8080, "password1") { Id = 1 };
+            Server server = new Server("Updated Title", "Updated Description", "Game1", "127.0.0.1", 8080, "password1") { Id = 1 };
+            Server existingServer = new Server("Title1", "Description1", "Game1", "127.0.0.1", 8080, "password1") { Id = 1 };
             _mockServerRepository.Setup(repo => repo.GetServerById(It.IsAny<int>())).Returns(existingServer);
             _mockServerRepository.Setup(repo => repo.UpdateServer(It.IsAny<Server>())).Returns(server);
 
             // Act
-            var result = _controller.Put(1, server);
+            var result = _controller.Put(1, new ServerViewModel(server));
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -110,7 +110,7 @@ namespace ServerManagerTests.ServerTests
             _mockServerRepository.Setup(repo => repo.GetServerById(It.IsAny<int>())).Returns((Server)null);
 
             // Act
-            var result = _controller.Put(1, new Server("Updated Title", "Updated Description", "Game1", "127.0.0.1", 8080, "password1"));
+            var result = _controller.Put(1, new ServerViewModel(new Server("Updated Title", "Updated Description", "Game1", "127.0.0.1", 8080, "password1")));
 
             // Assert
             Assert.IsType<NotFoundResult>(result);

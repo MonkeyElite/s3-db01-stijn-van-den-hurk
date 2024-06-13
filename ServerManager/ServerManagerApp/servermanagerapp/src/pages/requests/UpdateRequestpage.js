@@ -12,7 +12,7 @@ function UpdateRequestPage() {
   const [loading, setLoading] = useState(true);
 
   const { getAccessTokenSilently } = useAuth0();
-  
+
   useEffect(() => {
     const fetchRequest = async () => {
       try {
