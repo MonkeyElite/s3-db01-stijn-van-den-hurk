@@ -4,9 +4,9 @@ services:
   servermanager-api:
     build: 
       context: ./
-      dockerfile: ServerManagerApi/dockerfile
+      dockerfile: /ServerManagerApi/Dockerfile
     ports:
-      - "5000:5000"
+      - "32584:8080"
 
   regenmeter-db:
     image: mcr.microsoft.com/azure-sql-edge:latest
