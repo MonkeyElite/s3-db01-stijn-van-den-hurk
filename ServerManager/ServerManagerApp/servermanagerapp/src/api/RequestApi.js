@@ -1,4 +1,4 @@
-const baseUrl = "https://localhost:5001/api/Request";
+const baseUrl = `${process.env.REACT_APP_API_URL}/Request`;
 
 const requestApi = {
   fetchRequests: async (token) => {

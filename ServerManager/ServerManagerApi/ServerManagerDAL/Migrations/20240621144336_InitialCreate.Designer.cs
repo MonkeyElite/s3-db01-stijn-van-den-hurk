@@ -12,7 +12,7 @@ using ServerManagerDAL.Data;
 namespace ServerManagerDAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240528194415_InitialCreate")]
+    [Migration("20240621144336_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -117,7 +117,94 @@ namespace ServerManagerDAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ServerId");
+
                     b.ToTable("Sessions");
+                });
+
+            modelBuilder.Entity("ServerManagerCore.Models.SessionUser", b =>
+                {
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SessionId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SessionUsers");
+                });
+
+            modelBuilder.Entity("ServerManagerCore.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sub")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ServerManagerCore.Models.Session", b =>
+                {
+                    b.HasOne("ServerManagerCore.Models.Server", "Server")
+                        .WithMany("Sessions")
+                        .HasForeignKey("ServerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Server");
+                });
+
+            modelBuilder.Entity("ServerManagerCore.Models.SessionUser", b =>
+                {
+                    b.HasOne("ServerManagerCore.Models.Session", "Session")
+                        .WithMany("SessionUsers")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ServerManagerCore.Models.User", "User")
+                        .WithMany("SessionUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ServerManagerCore.Models.Server", b =>
+                {
+                    b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("ServerManagerCore.Models.Session", b =>
+                {
+                    b.Navigation("SessionUsers");
+                });
+
+            modelBuilder.Entity("ServerManagerCore.Models.User", b =>
+                {
+                    b.Navigation("SessionUsers");
                 });
 #pragma warning restore 612, 618
         }

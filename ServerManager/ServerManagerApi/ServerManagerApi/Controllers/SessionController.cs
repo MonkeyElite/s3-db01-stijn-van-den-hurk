@@ -12,10 +12,12 @@ namespace ServerManagerApi.Controllers
     public class SessionController : ControllerBase
     {
         private readonly SessionService _sessionService;
+        private readonly UserService _userService;
 
-        public SessionController(SessionService sessionService)
+        public SessionController(SessionService sessionService, UserService userService)
         {
             _sessionService = sessionService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -70,7 +72,7 @@ namespace ServerManagerApi.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Log the error
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -100,7 +102,7 @@ namespace ServerManagerApi.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Log the error
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -122,8 +124,79 @@ namespace ServerManagerApi.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); // Log the error
+                Console.WriteLine(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet("{sessionId}/users")]
+        public IActionResult GetAppliedUsers(int sessionId)
+        {
+            try
+            {
+                var appliedUsers = _sessionService.GetAppliedUsers(sessionId);
+                return Ok(appliedUsers);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("{sessionId}/apply")]
+        public async Task<IActionResult> ApplyForSession(int sessionId, [FromBody] string userEmail)
+        {
+            if (string.IsNullOrWhiteSpace(userEmail))
+            {
+                return BadRequest("Invalid user email.");
+            }
+
+            try
+            {
+                // Get user by email
+                var user = await _userService.GetUserByEmailAsync(userEmail);
+                if (user == null)
+                {
+                    return BadRequest("User not found.");
+                }
+
+                // Add user to session
+                _sessionService.AddUserToSession(sessionId, user.Id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete("{sessionId}/unapply")]
+        public async Task<IActionResult> UnapplyFromSession(int sessionId, [FromBody] string userEmail)
+        {
+            if (string.IsNullOrWhiteSpace(userEmail))
+            {
+                return BadRequest("Invalid user email.");
+            }
+
+            try
+            {
+                // Get user by email
+                var user = await _userService.GetUserByEmailAsync(userEmail);
+                if (user == null)
+                {
+                    return BadRequest("User not found.");
+                }
+
+                // Remove user from session
+                _sessionService.RemoveUserFromSession(sessionId, user.Id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }

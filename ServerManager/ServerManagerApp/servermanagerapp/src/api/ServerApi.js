@@ -1,4 +1,4 @@
-const baseUrl = "https://localhost:5001/api/Server";
+const baseUrl = `${process.env.REACT_APP_API_URL}/Server`;
 
 const serverApi = {
   fetchServers: async (token) => {
@@ -25,7 +25,6 @@ const serverApi = {
 
   fetchServerById: async (id, token) => {
     try {
-      console.log("Winfajsndjs");
       const response = await fetch(`${baseUrl}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,

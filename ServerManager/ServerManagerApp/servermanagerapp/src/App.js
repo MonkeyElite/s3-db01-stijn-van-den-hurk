@@ -9,6 +9,9 @@ import UpdateRequestPage from "./pages/requests/UpdateRequestPage";
 import RequestInfoPage from "./pages/requests/RequestInfoPage";
 
 import SessionsPage from "./pages/SessionsPage";
+import CreateSessionPage from "./pages/sessions/CreateSessionPage";
+import UpdateSessionPage from "./pages/sessions/UpdateSessionPage";
+import SessionInfoPage from "./pages/sessions/SessionInfoPage";
 
 import ServersPage from "./pages/ServersPage";
 import CreateServerPage from "./pages/servers/CreateServerPage";
@@ -26,6 +29,9 @@ function App() {
           <Route path="/request/update/:id" element={<UpdateRequestPage />} />
           <Route path="/request/info/:id" element={<RequestInfoPage />} />
           <Route path="/session" element={<SessionsPage />} />
+          <Route path="/session/create" element={<CreateSessionPage />} />
+          <Route path="/session/update/:id" element={<UpdateSessionPage />} />
+          <Route path="/session/info/:id" element={<SessionInfoPage />} />
           <Route path="/server" element={<ServersPage />} />
           <Route path="/server/create" element={<CreateServerPage />} />
           <Route path="/server/update/:id" element={<UpdateServerPage />} />

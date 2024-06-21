@@ -24,5 +24,7 @@ namespace ServerManagerCore.Models
         [Required]
         public int ServerId { get; set; } = serverId;
 
+        public ICollection<SessionUser> SessionUsers { get; set; } = new List<SessionUser>();
+
     }
 }
