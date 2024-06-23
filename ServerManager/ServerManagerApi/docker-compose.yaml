@@ -1,24 +1,23 @@
 version: '3.8'
 
 services:
-    servermanagerapi:
-      build:
-        context: ./ServerManagerApi
-        dockerfile: Dockerfile
-      ports:
-        - 5000:5000
-      depends_on:
-        - database
+  servermanager-api:
+    build: 
+      context: ./
+      dockerfile: /ServerManagerApi/Dockerfile
+    ports:
+      - "32584:8080"
 
-    database:
-      image: mcr.microsoft.com/mssql/server:latest
-      environment:
-        SA_PASSWORD: "GewoonBeter!"
-        ACCEPT_EULA: "Y"
-      ports:
-        - "1433:1433"
-      volumes:
-        - db_data:/var/opt/mssql
+  regenmeter-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
 
 volumes:
-  db_data:
+  sql_data:

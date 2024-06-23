@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import requestApi from "../api/RequestApi";
+import { useAuth0 } from "@auth0/auth0-react";
+import requestApi from "../../api/RequestApi";
 
-const CreateRequestForm = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+const UpdateRequestForm = ({ request }) => {
+  const [title, setTitle] = useState(request.title);
+  const [description, setDescription] = useState(request.description);
   const [errorMessage, setErrorMessage] = useState("");
+  const { getAccessTokenSilently } = useAuth0();
 
   const validateForm = () => {
     if (!title.trim() || !description.trim()) {
@@ -24,41 +26,37 @@ const CreateRequestForm = () => {
     return true;
   };
 
-  const createRequest = async (e) => {
+  const updateRequest = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    const newRequest = {
-      title: title.trim(),
-      description: description.trim(),
-    };
+    const updatedRequest = { title, description };
 
     try {
-      await requestApi.postRequest(newRequest);
-      setTitle("");
-      setDescription("");
-      setErrorMessage("");
+      const token = await getAccessTokenSilently();
+      await requestApi.putRequest(request.id, updatedRequest, token);
       window.location.href = "/request";
     } catch (error) {
-      console.error("Error creating request:", error);
-      setErrorMessage("Failed to create request. Please try again later.");
+      console.error("Error updating request:", error);
+      setErrorMessage("Failed to update request. Please try again later.");
     }
   };
 
   return (
     <div style={{ marginBottom: "20px" }}>
+      <h2 className="text-white">Update Request</h2>
       {errorMessage && <p className="text-red-600">{errorMessage}</p>}
-      <form onSubmit={createRequest} style={formStyle}>
+      <form onSubmit={updateRequest} style={formStyle}>
         <input
           type="text"
           placeholder="Request Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           style={inputStyle}
-          data-testid="create-request-title"
+          data-testid="update-request-title"
         />
         <input
           type="text"
@@ -66,13 +64,13 @@ const CreateRequestForm = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           style={inputStyle}
-          data-testid="create-request-description"
+          data-testid="update-request-description"
         />
         <button
           className="text-white"
           type="submit"
           style={buttonStyle}
-          data-testid="create-request-submit"
+          data-testid="update-request-submit"
         >
           Submit
         </button>
@@ -102,4 +100,4 @@ const buttonStyle = {
   marginLeft: "10px",
 };
 
-export default CreateRequestForm;
+export default UpdateRequestForm;

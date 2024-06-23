@@ -1,15 +1,8 @@
 TODO s3:
 
-- DTOs gebruiken. // Gekozen om viewmodels te gebruiken, Done
-- static code analysis (solarqube + sonarscanner) // Done
-- WebSockets // Done
 - Research
-- CD pipeline
 - Docker
-- End to end testen
-- Integration testen
-- C4 model, architectuur documentatie.
-- FrontEnd Validatie
+- ERD documentatie.
 
 Vanuit de CI de CD aanroepen. Als je github actions lokaal draait dan kan je Docker aanroepen.
 
@@ -31,7 +24,7 @@ LO4:
 
 LO5:
 - Meten unit test coverage // Done
-- End to end testen
+- End to end testen // Done
 - Integration testen
 - Performance testen (optioneel)
 

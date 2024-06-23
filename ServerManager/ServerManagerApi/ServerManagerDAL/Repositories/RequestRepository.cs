@@ -4,14 +4,9 @@ using ServerManagerDAL.Data;
 
 namespace ServerManagerDAL.Repositories
 {
-    public class RequestRepository : IRequestRepository
+    public class RequestRepository(ApplicationDbContext dbContext) : IRequestRepository
     {
-        private readonly ApplicationDbContext _dbContext;
-
-        public RequestRepository(ApplicationDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public List<Request> GetRequests()
         {
@@ -53,11 +48,11 @@ namespace ServerManagerDAL.Repositories
             } 
         }
 
-        public Request UpdateRequest(int id, Request request)
+        public Request UpdateRequest(Request request)
         {
             try
             {
-                var existingRequest = _dbContext.Requests.FirstOrDefault(r => r.Id == id);
+                var existingRequest = _dbContext.Requests.FirstOrDefault(r => r.Id == request.Id);
                 if (existingRequest != null)
                 {
                     existingRequest.Title = request.Title;
@@ -65,7 +60,7 @@ namespace ServerManagerDAL.Repositories
                     _dbContext.SaveChanges();
                 }
 
-                return GetRequestById(id);
+                return GetRequestById(request.Id);
             } catch (Exception ex)
             {
                 throw new Exception(ex.Message);

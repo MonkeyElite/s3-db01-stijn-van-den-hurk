@@ -1,4 +1,4 @@
-import RequestList from "../components/RequestList";
+import RequestList from "../components/Request/RequestList";
 import NavBar from "../components/navbar";
 
 import { Link } from "react-router-dom";

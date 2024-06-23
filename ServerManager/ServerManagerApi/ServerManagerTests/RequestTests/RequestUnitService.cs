@@ -89,10 +89,10 @@ namespace ServerManagerTests.RequestTests
             var requestId = 1;
             var request = new Request("Test Request", "Test Description") { Id = requestId };
 
-            mockRepository.Setup(repo => repo.UpdateRequest(requestId, request)).Returns(request);
+            mockRepository.Setup(repo => repo.UpdateRequest(request)).Returns(request);
 
             // Act
-            var result = service.UpdateRequest(requestId, request);
+            var result = service.UpdateRequest(request);
 
             // Assert
             Assert.Equal(request, result);
@@ -104,10 +104,10 @@ namespace ServerManagerTests.RequestTests
             // Arrange
             var mockRepository = new Mock<IRequestRepository>();
             var service = new RequestService(mockRepository.Object);
-            var request = new Request("Test Request", "Test Description") { Id = 1 };
+            var request = new Request("Test Request", "Test Description") { Id = -1 };
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => service.UpdateRequest(0, request));
+            Assert.Throws<ArgumentException>(() => service.UpdateRequest(request));
         }
 
         [Fact]
@@ -118,7 +118,31 @@ namespace ServerManagerTests.RequestTests
             var service = new RequestService(mockRepository.Object);
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => service.UpdateRequest(1, null));
+            Assert.Throws<ArgumentException>(() => service.UpdateRequest(null));
+        }
+
+        [Fact]
+        public void UpdateRequest_WithNullRequestTitle_ThrowsArgumentException()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRequestRepository>();
+            var service = new RequestService(mockRepository.Object);
+            var request = new Request(null, "Test Description") { Id = 1 } ;
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => service.UpdateRequest(request));
+        }
+
+        [Fact]
+        public void UpdateRequest_WithNullRequestDescription_ThrowsArgumentException()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRequestRepository>();
+            var service = new RequestService(mockRepository.Object);
+            var request = new Request("Test Title", null) { Id = 1 };
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => service.UpdateRequest(request));
         }
 
         [Fact]
